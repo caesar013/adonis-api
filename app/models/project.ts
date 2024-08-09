@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, beforeCreate } from '@adonisjs/lucid/orm'
+import { BaseModel, column, beforeCreate, hasMany } from '@adonisjs/lucid/orm'
 import { randomUUID } from 'node:crypto'
+import Task from '#models/task'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
 
 export default class Project extends BaseModel {
   static selfAssignPrimaryKey = true
@@ -24,4 +26,10 @@ export default class Project extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
   declare updatedAt: DateTime
+
+  @hasMany(() => Task, {
+    foreignKey: 'project_id',
+    localKey: 'id',
+  })
+    declare tasks: HasMany<typeof Task>
 }
