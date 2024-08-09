@@ -7,10 +7,10 @@
 |
 */
 
-import ProjectsController from '#controllers/projects_controller'
-import TasksController from '#controllers/tasks_controller'
-import UsersController from '#controllers/users_controller'
 import router from '@adonisjs/core/services/router'
+const ProjectsController = async () => await import('#controllers/projects_controller')
+const TasksController = async () => await import('#controllers/tasks_controller')
+const UsersController = async () => await import('#controllers/users_controller')
 
 router.get('/', async () => {
   return {
