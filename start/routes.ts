@@ -20,6 +20,6 @@ router.get('/', async () => {
 
 router.group(() => {
   router.resource('/projects', ProjectsController).apiOnly()
-  router.resource('/users', UsersController).apiOnly()
+  router.resource('/users', UsersController).apiOnly().except(['update'])
   router.resource('/tasks', TasksController).apiOnly()
 }).prefix('api')
