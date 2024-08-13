@@ -1,6 +1,6 @@
 import Project from '#models/project';
 import type { HttpContext } from '@adonisjs/core/http';
-import { createProjectValidator, updateProjectValidator } from '#validators/project';
+import { createProjectValidator, updateProjectValidator } from '#validators/project'
 
 export default class ProjectsController {
   /**
@@ -40,8 +40,11 @@ export default class ProjectsController {
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request }: HttpContext) {
+  async update({ params, request, response }: HttpContext) {
     const validated = await request.validateUsing(updateProjectValidator)
+    if (validated?.title == null || validated?.description == null) {
+      return response.status(400).send({ status: false, message: 'Validation Failed' })
+    }
     const project = (await Project.findOrFail(params.id)).merge(validated).save()
     return project
   }

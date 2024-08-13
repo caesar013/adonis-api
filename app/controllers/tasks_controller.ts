@@ -37,8 +37,11 @@ export default class TasksController {
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request }: HttpContext) {
+  async update({ params, request, response }: HttpContext) {
     const validated = await request.validateUsing(updateTaskValidator)
+    if (validated?.title == null || validated?.description == null) {
+      return response.status(400).send({ status: false, message: 'Validation Failed' })
+    }
     const task = (await Task.findOrFail(params.id)).merge(validated).save()
     return task
   }
