@@ -8,7 +8,7 @@ vine.convertEmptyStringsToNull = true
 export const createProjectValidator = vine.compile(
   vine.object({
     title: vine.string().trim().optional().requiredIfExists('description'),
-    description: vine.string().optional(),
+    description: vine.string().optional().requiredIfExists('title'),
   })
 )
 
