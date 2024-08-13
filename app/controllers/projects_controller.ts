@@ -20,10 +20,13 @@ export default class ProjectsController {
   /**
    * Handle form submission for the create action
    */
-  async store({ request }: HttpContext) {
+  async store({ request, response }: HttpContext) {
     const validated = await request.validateUsing(createProjectValidator)
-    const project = new Project().fill(validated).save()
-    return project
+    if (validated?.title == null) {
+      return response.status(400).send({ status: false, message: 'Validation Failed' })
+    }
+    const project = await new Project().fill(validated).save()
+    return response.status(201).send({ project: project, status: true })
   }
 
   /**
