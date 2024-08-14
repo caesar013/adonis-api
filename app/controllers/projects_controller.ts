@@ -6,7 +6,7 @@ export default class ProjectsController {
   /**
    * Display a list of resource
    */
-  async index({response} : HttpContext) {
+  async index({ response }: HttpContext) {
     const projects = (await Project.all()).map((project) => project.serialize())
     // const projects = await Project.all()
     const status = projects.length > 0 ? true : false
@@ -34,7 +34,7 @@ export default class ProjectsController {
    */
   async show({ params, response }: HttpContext) {
     const project = await Project.findOrFail(params.id)
-    return response.status(200).send({project: project, status: true})
+    return response.status(200).send({ project: project, status: true })
   }
 
   /**
