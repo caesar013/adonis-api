@@ -34,4 +34,5 @@ router.group(() => {
   router.patch('/users/:id/update-avatar', [UpdateUserAvatarsController])
   router.post('/login', [AuthController, 'login'])
   router.post('/logout', [AuthController,'logout']).use(middleware.auth({ guards: ['api'] }))
+  router.post('/register', [AuthController, 'register'])
 }).prefix('api')
