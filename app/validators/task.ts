@@ -6,10 +6,10 @@ import vine from '@vinejs/vine'
  */
 export const createTaskValidator = vine.compile(
   vine.object({
-    title: vine.string().trim().optional().requiredIfExists('description'),
-    description: vine.string().optional(),
-    project_id: vine.string().trim().uuid().optional().requiredIfExists('title'),
-    user_id: vine.string().trim().uuid().optional().requiredIfExists('title'),
+    title: vine.string().trim(),
+    description: vine.string(),
+    project_id: vine.string().trim().uuid(),
+    user_id: vine.string().trim().uuid(),
   })
 )
 
@@ -19,9 +19,9 @@ export const createTaskValidator = vine.compile(
  */
 export const updateTaskValidator = vine.compile(
   vine.object({
-    title: vine.string().trim().optional().requiredIfExists('description'),
+    title: vine.string().trim().optional(),
     description: vine.string().trim().optional(),
-    project_id: vine.string().trim().uuid().optional().requiredIfExists('title'),
-    user_id: vine.string().trim().uuid().optional().requiredIfExists('title'),
+    project_id: vine.string().trim().uuid().optional(),
+    user_id: vine.string().trim().uuid().optional(),
   })
 )
