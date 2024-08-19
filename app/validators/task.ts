@@ -7,9 +7,8 @@ import vine from '@vinejs/vine'
 export const createTaskValidator = vine.compile(
   vine.object({
     title: vine.string().trim(),
-    description: vine.string(),
+    description: vine.string().trim().optional(),
     project_id: vine.string().trim().uuid(),
-    user_id: vine.string().trim().uuid(),
   })
 )
 
@@ -22,6 +21,5 @@ export const updateTaskValidator = vine.compile(
     title: vine.string().trim().optional(),
     description: vine.string().trim().optional(),
     project_id: vine.string().trim().uuid().optional(),
-    user_id: vine.string().trim().uuid().optional(),
   })
 )

@@ -11,7 +11,7 @@ export default class ProjectsController {
     // const projects = await Project.all()
     const status = projects.length > 0 ? true : false
     if (status === false) {
-      return response.status(204).send({ status: status, message: 'No projects found' })
+      return response.status(204)
     }
     return projects
     // return response.status(200).send({ projects: projects, status: status })
@@ -22,9 +22,6 @@ export default class ProjectsController {
    */
   async store({ request, response }: HttpContext) {
     const validated = await request.validateUsing(createProjectValidator)
-    if (validated?.title == null) {
-      return response.status(400).send({ status: false, message: 'Validation Failed' })
-    }
     const project = await new Project().fill(validated).save()
     return response.status(201).send({ project: project, status: true })
   }
@@ -40,11 +37,8 @@ export default class ProjectsController {
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request, response }: HttpContext) {
+  async update({ params, request }: HttpContext) {
     const validated = await request.validateUsing(updateProjectValidator)
-    if (validated?.title == null || validated?.description == null) {
-      return response.status(400).send({ status: false, message: 'Validation Failed' })
-    }
     const project = (await Project.findOrFail(params.id)).merge(validated).save()
     return project
   }

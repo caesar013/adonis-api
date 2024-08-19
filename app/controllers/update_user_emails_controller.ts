@@ -6,7 +6,6 @@ export default class UpdateUserEmailsController {
   async handle({ params, request, bouncer, response }: HttpContext) {
     // Handle request
     const validated = await request.validateUsing(updateEmailValidator)
-    delete validated.old_email
     const user = await User.findOrFail(params.id)
     if (await bouncer.allows('editUser', user)) {
       user.email = validated?.email || user.email

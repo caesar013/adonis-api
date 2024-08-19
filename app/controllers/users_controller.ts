@@ -1,5 +1,4 @@
 import User from '#models/user'
-import { createUserValidator } from '#validators/user'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class UsersController {
@@ -17,19 +16,6 @@ export default class UsersController {
   }
 
   /**
-   * Handle form submission for the create action
-   */
-  async store({ request, response }: HttpContext) {
-    const validated = await request.validateUsing(createUserValidator)
-    delete validated.password_confirmation
-    if (validated?.email == null) {
-      return response.status(400).send({ status: false, message: 'Validation Failed' })
-    }
-    const user = await new User().fill(validated).save()
-    return response.status(201).send({ status: true, user: user })
-  }
-
-  /**
    * Show individual record
    */
   async show({ params }: HttpContext) {
@@ -41,9 +27,12 @@ export default class UsersController {
   /**
    * Delete record
    */
-  async destroy({ params, response }: HttpContext) {
+  async destroy({ params, response, bouncer }: HttpContext) {
     const user = await User.findOrFail(params.id)
-    user.delete()
-    return response.status(204)
+    if (await bouncer.allows('deleteUser', user)) {
+      user.delete()
+      return response.status(204)
+    }
+    return response.status(403).send({status: false, message: "You are not authorized to delete"})
   }
 }

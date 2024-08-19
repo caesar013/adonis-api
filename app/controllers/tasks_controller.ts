@@ -11,19 +11,20 @@ export default class TasksController {
     if (tasks.length > 0) {
       return tasks
     } else {
-      return response.status(204).send({ staus: false, message: 'No tasks found' })
+      return response.status(204)
     }
   }
 
   /**
    * Handle form submission for the create action
    */
-  async store({ request, response }: HttpContext) {
+  async store({ request, response, bouncer, auth }: HttpContext) {
     const validated = await request.validateUsing(createTaskValidator)
-    if (validated?.title == null) {
-      return response.status(400).send({ status: false, message: 'Validation Failed'})
+    if (await bouncer.with('TaskPolicy').denies('create')) {
+      return response.status(403).send({ status: false, message: 'Not authorized' })
     }
-    const task = await new Task().fill(validated).save()
+    const newValidated = Object.assign(validated, { user_id: auth.user?.id })
+    const task = await new Task().fill(newValidated).save()
     return response.status(201).send({ task: task, status: true })
   }
 
@@ -37,20 +38,24 @@ export default class TasksController {
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request, response }: HttpContext) {
+  async update({ params, request, response, bouncer }: HttpContext) {
     const validated = await request.validateUsing(updateTaskValidator)
-    if (validated?.title == null || validated?.description == null) {
-      return response.status(400).send({ status: false, message: 'Validation Failed' })
+    const task = await Task.findOrFail(params.id)
+    if (await bouncer.with('TaskPolicy').denies('edit', task)) {
+      return response.status(403).send({ status: false, message: 'Not authorized' })
     }
-    const task = (await Task.findOrFail(params.id)).merge(validated).save()
-    return task
+    task.merge(validated).save()
+    return response.status(200).send({ task: task, status: true, message: 'Task updated successfully' })
   }
 
   /**
    * Delete record
    */
-  async destroy({ params, response }: HttpContext) {
+  async destroy({ params, response, bouncer }: HttpContext) {
     const task = await Task.findOrFail(params.id)
+    if (await bouncer.with('TaskPolicy').denies('delete', task)) {
+      return response.status(403).send({ status: false, message: 'Not authorized' })
+    }
     task.delete()
     return response.status(204)
   }

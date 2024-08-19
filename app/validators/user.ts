@@ -1,20 +1,6 @@
 import vine from '@vinejs/vine'
 
 /**
- * Validator to validate the payload when creating
- * a new user.
- */
-export const createUserValidator = vine.compile(
-  vine.object({
-    name: vine.string().trim(),
-    email: vine.string().trim().email().unique(async (db, value) => {
-      return await db.query().from('users').where('email', value).first() ? false : true
-    }),
-    password: vine.string().trim().confirmed().optional().requiredIfExists('password_confirmation'),
-  })
-)
-
-/**
  * Validator to validate the payload when updating
  * an existing user.
  */
