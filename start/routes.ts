@@ -27,12 +27,14 @@ router.get('/', async () => {
 router.group(() => {
   router.resource('/projects', ProjectsController).apiOnly()
   router.resource('/users', UsersController).apiOnly().except(['update'])
-  router.resource('/tasks', TasksController).apiOnly()
+  router.resource('/tasks', TasksController).apiOnly().use(['store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
+  router.post('/login', [AuthController, 'login'])
+  router.post('/register', [AuthController, 'register'])
   router.patch('/users/:id/update-name', [UpdateUserNamesController]).use(middleware.auth({ guards: ['api'] }))
   router.patch('/users/:id/update-email', [UpdateUserEmailsController]).use(middleware.auth({ guards: ['api'] }))
   router.patch('/users/:id/update-password', [UpdateUserPasswordsController]).use(middleware.auth({ guards: ['api'] }))
   router.patch('/users/:id/update-avatar', [UpdateUserAvatarsController]).use(middleware.auth({ guards: ['api'] }))
-  router.post('/login', [AuthController, 'login'])
-  router.post('/logout', [AuthController,'logout']).use(middleware.auth({ guards: ['api'] }))
-  router.post('/register', [AuthController, 'register'])
+  router.group(() => {
+    router.post('/logout', [AuthController,'logout']).use(middleware.auth({ guards: ['api'] }))
+  }).use(middleware.auth({ guards: ['api']}))
 }).prefix('api')
