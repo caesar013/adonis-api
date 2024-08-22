@@ -33,6 +33,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column({ serializeAs: null })
   declare password: string
 
+  @column({ serializeAs: 'avatar' })
+  declare avatar: string
+
   @column.dateTime({ autoCreate: true, serializeAs: null })
   declare createdAt: DateTime
 
@@ -45,5 +48,5 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'user_id',
     localKey: 'id',
   })
-    declare tasks: HasMany<typeof Task>
+  declare tasks: HasMany<typeof Task>
 }

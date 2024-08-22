@@ -29,6 +29,9 @@ export const updatePasswordValidator = vine.compile(
 
 export const updateAvatarValidator = vine.compile(
   vine.object({
-    avatar: vine.string().trim().optional(),
+    avatar: vine.file({
+      size: '2mb',
+      extnames: ['jpg', 'jpeg', 'png'],
+    })
   })
 )
