@@ -10,7 +10,9 @@ export default class UpdateUserEmailsController {
     if (await bouncer.allows('editUser', user)) {
       user.email = validated?.email || user.email
       await user.save()
-      return response.status(200).send({ status: true, user: user, message: 'Email updated successfully' })
+      return response
+        .status(200)
+        .send({ status: true, user: user, message: 'Email updated successfully' })
     }
     return response.status(403).send({ status: false, message: 'You are not authorized to edit' })
   }

@@ -12,8 +12,8 @@ export default class Task extends BaseModel {
   declare id: string
 
   @beforeCreate()
-    static assignUuid(task: Task) {
-      task.id = randomUUID()
+  static assignUuid(task: Task) {
+    task.id = randomUUID()
   }
 
   @column({ serializeAs: 'name' })
@@ -38,12 +38,11 @@ export default class Task extends BaseModel {
     foreignKey: 'user_id',
     localKey: 'id',
   })
-    declare user: BelongsTo<typeof User>
+  declare user: BelongsTo<typeof User>
 
   @belongsTo(() => Project, {
     foreignKey: 'project_id',
     localKey: 'id',
   })
   declare project: BelongsTo<typeof Project>
-
 }

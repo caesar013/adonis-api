@@ -45,7 +45,9 @@ export default class TasksController {
       return response.status(403).send({ status: false, message: 'Not authorized' })
     }
     task.merge(validated).save()
-    return response.status(200).send({ task: task, status: true, message: 'Task updated successfully' })
+    return response
+      .status(200)
+      .send({ task: task, status: true, message: 'Task updated successfully' })
   }
 
   /**

@@ -12,12 +12,21 @@ export const updateNameValidator = vine.compile(
 
 export const updateEmailValidator = vine.compile(
   vine.object({
-    email: vine.string().trim().email().notSameAs('old_email').unique(async (db, value) => {
-      return await db.query().from('users').where('email', value).first() ? false : true
-    }),
-    old_email: vine.string().trim().email().unique(async (db, value) => {
-      return await db.query().from('users').where('email', value).first() ? true : false
-    }),
+    email: vine
+      .string()
+      .trim()
+      .email()
+      .notSameAs('old_email')
+      .unique(async (db, value) => {
+        return (await db.query().from('users').where('email', value).first()) ? false : true
+      }),
+    old_email: vine
+      .string()
+      .trim()
+      .email()
+      .unique(async (db, value) => {
+        return (await db.query().from('users').where('email', value).first()) ? true : false
+      }),
   })
 )
 
@@ -32,6 +41,6 @@ export const updateAvatarValidator = vine.compile(
     avatar: vine.file({
       size: '2mb',
       extnames: ['jpg', 'jpeg', 'png'],
-    })
+    }),
   })
 )

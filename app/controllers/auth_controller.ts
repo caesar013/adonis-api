@@ -3,7 +3,7 @@ import { loginValidator, registerValidator } from '#validators/auth'
 import User from '#models/user'
 
 export default class AuthController {
-  public async login({ request }: HttpContext) {
+  async login({ request }: HttpContext) {
     const validated = await request.validateUsing(loginValidator)
 
     const user = await User.verifyCredentials(validated?.email ?? '', validated?.password ?? '')
@@ -12,7 +12,7 @@ export default class AuthController {
     return token
   }
 
-  public async logout({ auth, response }: HttpContext) {
+  async logout({ auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
 
     await User.accessTokens.delete(user, user.currentAccessToken.identifier)
@@ -20,7 +20,7 @@ export default class AuthController {
     return response.ok({ message: 'Logged out successfully', success: true, data: user })
   }
 
-  public async register({ request, response }: HttpContext) {
+  async register({ request, response }: HttpContext) {
     const validated = await request.validateUsing(registerValidator)
 
     const user = await User.create(validated)

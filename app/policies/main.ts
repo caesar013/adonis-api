@@ -13,5 +13,5 @@
 */
 
 export const policies = {
-  TaskPolicy: () => import('#policies/task_policy')
+  TaskPolicy: () => import('#policies/task_policy'),
 }
