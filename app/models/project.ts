@@ -13,7 +13,7 @@ export default class Project extends BaseModel {
   @beforeCreate()
   static assignUuid(project: Project) {
     project.id = randomUUID()
-    }
+  }
 
   @column({ serializeAs: 'name' })
   declare title: string
@@ -31,5 +31,5 @@ export default class Project extends BaseModel {
     foreignKey: 'project_id',
     localKey: 'id',
   })
-    declare tasks: HasMany<typeof Task>
+  declare tasks: HasMany<typeof Task>
 }

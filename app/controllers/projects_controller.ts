@@ -1,29 +1,24 @@
-import Project from '#models/project';
-import type { HttpContext } from '@adonisjs/core/http';
-import { createProjectValidator, updateProjectValidator } from '#validators/project'
+import Project from '#models/project'
+import type { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
+import ProjectService from '#services/project_service'
 
+@inject()
 export default class ProjectsController {
+  constructor(protected projectService: ProjectService) {}
   /**
    * Display a list of resource
    */
-  async index({ response }: HttpContext) {
-    const projects = (await Project.all()).map((project) => project.serialize())
-    // const projects = await Project.all()
-    const status = projects.length > 0 ? true : false
-    if (status === false) {
-      return response.status(204)
-    }
-    return projects
-    // return response.status(200).send({ projects: projects, status: status })
+  @inject()
+  async index() {
+    return await this.projectService.getProjects()
   }
 
   /**
    * Handle form submission for the create action
    */
-  async store({ request, response }: HttpContext) {
-    const validated = await request.validateUsing(createProjectValidator)
-    const project = await new Project().fill(validated).save()
-    return response.status(201).send({ project: project, status: true })
+  async store() {
+    return await this.projectService.createProject()
   }
 
   /**
@@ -37,18 +32,14 @@ export default class ProjectsController {
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request }: HttpContext) {
-    const validated = await request.validateUsing(updateProjectValidator)
-    const project = (await Project.findOrFail(params.id)).merge(validated).save()
-    return project
+  async update({ params }: HttpContext) {
+    return this.projectService.updateProject(params.id)
   }
 
   /**
    * Delete record
    */
-  async destroy({ params, response }: HttpContext) {
-    const project = await Project.findOrFail(params.id)
-    project.delete()
-    return response.status(204)
+  async destroy({ params }: HttpContext) {
+    return this.projectService.deleteProject(params.id)
   }
 }
