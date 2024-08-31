@@ -1,15 +1,21 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Task from '#models/task'
 import { createTaskValidator, updateTaskValidator } from '#validators/task'
+import { inject } from '@adonisjs/core'
+import TaskService from '#services/task_service'
 
+@inject()
 export default class TasksController {
+  constructor(private taskService: TaskService) {}
   /**
    * Display a list of resource
    */
   async index({ response }: HttpContext) {
-    const tasks = await Task.all()
-    if (tasks.length > 0) {
-      return tasks
+    const res = await this.taskService.getTasks()
+    if (res) {
+      return response
+        .status(200)
+        .send({ tasks: res, status: true, message: 'Tasks retrieved successfully' })
     } else {
       return response.status(204)
     }
@@ -18,14 +24,13 @@ export default class TasksController {
   /**
    * Handle form submission for the create action
    */
-  async store({ request, response, bouncer, auth }: HttpContext) {
+  async store({ request, response, auth }: HttpContext) {
     const validated = await request.validateUsing(createTaskValidator)
-    if (await bouncer.with('TaskPolicy').denies('create')) {
-      return response.status(403).send({ status: false, message: 'Not authorized' })
+    const res = await this.taskService.createTask(validated, auth)
+    if (!res) {
+      return response.forbidden({ status: false, message: 'You are Not authorized' })
     }
-    const newValidated = Object.assign(validated, { user_id: auth.user?.id })
-    const task = await new Task().fill(newValidated).save()
-    return response.status(201).send({ task: task, status: true })
+    return res
   }
 
   /**
@@ -38,27 +43,25 @@ export default class TasksController {
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request, response, bouncer }: HttpContext) {
+  async update({ params, request, response }: HttpContext) {
     const validated = await request.validateUsing(updateTaskValidator)
-    const task = await Task.findOrFail(params.id)
-    if (await bouncer.with('TaskPolicy').denies('edit', task)) {
-      return response.status(403).send({ status: false, message: 'Not authorized' })
+    const res = await this.taskService.updateTask(validated, params.id)
+    if (!res) {
+      return response.forbidden({ status: false, message: 'You are Not authorized' })
     }
-    task.merge(validated).save()
     return response
       .status(200)
-      .send({ task: task, status: true, message: 'Task updated successfully' })
+      .send({ task: res, status: true, message: 'Task updated successfully' })
   }
 
   /**
    * Delete record
    */
-  async destroy({ params, response, bouncer }: HttpContext) {
-    const task = await Task.findOrFail(params.id)
-    if (await bouncer.with('TaskPolicy').denies('delete', task)) {
-      return response.status(403).send({ status: false, message: 'Not authorized' })
+  async destroy({ params, response }: HttpContext) {
+    const res = this.taskService.deleteTask(params.id)
+    if (!res) {
+      return response.forbidden({ status: false, message: 'You are Not authorized' })
     }
-    task.delete()
     return response.status(204)
   }
 }
